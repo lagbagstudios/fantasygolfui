@@ -1,5 +1,5 @@
 {
-  "name": "",
+  "name": "fantasygolfui",
   "version": "0.0.1",
   "private": true,
   "scripts": {
@@ -15,7 +15,7 @@
     "@skeletonlabs/skeleton": "2.9.0",
     "@skeletonlabs/tw-plugin": "0.3.1",
     "@sveltejs/adapter-auto": "^3.0.0",
-    "@sveltejs/kit": "^2.0.0",
+    "@sveltejs/kit": "^2.5.0",
     "@sveltejs/vite-plugin-svelte": "^3.0.0",
     "@tailwindcss/forms": "0.5.7",
     "@tailwindcss/typography": "0.5.10",
@@ -36,7 +36,10 @@
   "type": "module",
   "dependencies": {
     "@floating-ui/dom": "1.6.3",
+    "@lucia-auth/adapter-mongodb": "^1.0.3",
+    "arctic": "^1.2.1",
     "highlight.js": "11.9.0",
+    "mongodb": "^6.5.0",
     "oslo": "^1.1.3"
   }
 }
