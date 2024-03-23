@@ -1,6 +1,6 @@
-<a href="/login/google" class="btn btn-xl variant-ghost">
+<a href="/login/google" class="btn btn-xl variant-ghost w-full sm:w-2/3">
 	<svg
-		class="h-6 w-6 mr-2"
+		class="h-8 w-6 mr-2"
 		xmlns="http://www.w3.org/2000/svg"
 		xmlns:xlink="http://www.w3.org/1999/xlink"
 		width="800px"

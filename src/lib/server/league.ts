@@ -2,26 +2,35 @@ import { ObjectId } from 'mongodb';
 import db from './db';
 import { alphabet, generateRandomString } from 'oslo/crypto';
 
-const League = db.collection<League>('leagues');
+export const League = db.collection<League>('leagues');
 
-export const createLeague = async (userId: string, isPublic: boolean): Promise<string> => {
+export const createLeague = async (
+	userId: string,
+	name: string,
+	isPrivate: boolean,
+	leaguePassword?: string
+) => {
 	const _id = new ObjectId();
-	const join_code = isPublic ? generateRandomString(8, alphabet('0-9')) : '';
+	const join_code = generateRandomString(4, alphabet('0-9'));
 
 	await League.insertOne({
 		_id,
+		owner_id: userId,
 		join_code,
-		is_public: isPublic,
+		is_private: isPrivate,
+		league_name: name,
+		league_password: leaguePassword,
 		teams: [{ user_id: userId }]
 	});
-
-	return join_code;
 };
 
 interface League {
 	_id: ObjectId;
+	owner_id: string;
 	join_code: string;
-	is_public: boolean;
+	is_private: boolean;
+	league_password?: string;
+	league_name: string;
 	teams?: [Team];
 }
 

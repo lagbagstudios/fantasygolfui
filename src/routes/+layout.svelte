@@ -27,7 +27,6 @@
 	import { computePosition, autoUpdate, flip, shift, offset, arrow } from '@floating-ui/dom';
 	import { storePopup } from '@skeletonlabs/skeleton';
 	import Navigation from '$lib/components/Navigation.svelte';
-	import Logo from '$lib/components/Logo.svelte';
 	storePopup.set({ computePosition, autoUpdate, flip, shift, offset, arrow });
 
 	// Used for Modals
@@ -44,9 +43,9 @@
 <svelte:head>{@html '<script>(' + autoModeWatcher.toString() + ')();</script>'}</svelte:head>
 
 <Drawer>
-	<h2 class="h2 p-4">Navigation</h2>
+	<h2 class="h2 p-4">LAGbag Fantasy Golf</h2>
 	<hr />
-	<Navigation />
+	<Navigation authenticated={data.authenticated} />
 </Drawer>
 
 <AppShell slotSidebarLeft="bg-surface-500/5 w-0 lg:w-64">
@@ -63,8 +62,11 @@
 							</svg>
 						</span>
 					</button>
-					<a href="/" class="text-xl" title="Go to Homepage"
-						><strong class="uppercase invisible sm:visible">Fantasy Golf</strong>
+					<a href="/" class="text-xl flex sm:hidden" title="Go to Homepage">
+						<strong class="uppercase">LFG</strong>
+					</a>
+					<a href="/" class="text-xl hidden sm:flex" title="Go to Homepage">
+						<strong class="uppercase">LAGbag Fantasy Golf</strong>
 					</a>
 				</div>
 			</svelte:fragment>
@@ -72,10 +74,10 @@
 				{#if data.givenName}
 					<p class="invisible md:visible">Welcome, {data.givenName}!</p>
 					<form method="post" action="/" use:enhance>
-						<button type="submit" class="btn variant-filled">Logout</button>
+						<button type="submit" class="btn variant-ghost">Logout</button>
 					</form>
 					{#if !data.emailVerified}
-						<a href="/verify-email" class="btn variant-ghost">Verify Email</a>
+						<a href="/verify-email" class="btn variant-ringed">Verify Email</a>
 					{/if}
 				{:else}
 					<a class="btn bg-initial" href="/login">Sign In</a>
@@ -85,6 +87,8 @@
 		</AppBar>
 	</svelte:fragment>
 
-	<svelte:fragment slot="sidebarLeft"><Navigation /></svelte:fragment>
+	<svelte:fragment slot="sidebarLeft"
+		><Navigation authenticated={data.authenticated} /></svelte:fragment
+	>
 	<slot />
 </AppShell>

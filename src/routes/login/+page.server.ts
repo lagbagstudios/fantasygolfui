@@ -27,10 +27,17 @@ export const actions: Actions = {
 
 		if (!existingUser) {
 			return fail(400, {
-				message: 'Incorrect email or password',
+				message: 'Incorrect email or password.',
 				incorrect: true
 			});
 		}
+
+		// if (existingUser.google_id) {
+		// 	return fail(400, {
+		// 		message: 'You must login with Google.',
+		// 		incorrect: true
+		// 	});
+		// }
 
 		const validPassword = await new Argon2id().verify(
 			existingUser.hashed_password,
@@ -38,7 +45,7 @@ export const actions: Actions = {
 		);
 		if (!validPassword) {
 			return fail(400, {
-				message: 'Incorrect email or password',
+				message: 'Incorrect email or password.',
 				incorrect: true
 			});
 		}

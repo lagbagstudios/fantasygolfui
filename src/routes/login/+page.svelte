@@ -8,7 +8,7 @@
 
 <form method="post" use:enhance>
 	<div class="container mx-auto p-8 space-y-8">
-		<h1 class="h1">Sign In</h1>
+		<h1 class="h1 text-center sm:text-left">Sign In</h1>
 		<label class="label">
 			<span>Email Address</span>
 			<input
@@ -36,7 +36,7 @@
 			<p class="text-center">{form?.message}</p>
 		{/if}
 		<div class="flex items-center justify-center">
-			<button class="btn btn-lg variant-ringed" type="submit">Continue</button>
+			<button class="btn btn-lg variant-ringed w-full sm:w-2/3" type="submit">Continue</button>
 		</div>
 		<h3 class="h3 text-center">- or -</h3>
 		<div class="flex items-center justify-center">

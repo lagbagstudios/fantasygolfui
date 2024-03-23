@@ -4,7 +4,12 @@ import { ObjectId } from 'mongodb';
 import db from './db';
 import { dev } from '$app/environment';
 import { Google } from 'arctic';
-import { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URI } from '$env/static/private';
+import {
+	BASE_URL,
+	GOOGLE_CLIENT_ID,
+	GOOGLE_CLIENT_SECRET,
+	GOOGLE_REDIRECT_URI
+} from '$env/static/private';
 import { alphabet, generateRandomString, sha256 } from 'oslo/crypto';
 import { TimeSpan, createDate } from 'oslo';
 import { encodeHex } from 'oslo/encoding';
@@ -16,7 +21,11 @@ export const PasswordReset = db.collection<PasswordReset>('password_reset');
 
 export const adapter = new MongodbAdapter(Session, User);
 
-export const google = new Google(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URI);
+export const google = new Google(
+	GOOGLE_CLIENT_ID,
+	GOOGLE_CLIENT_SECRET,
+	`${BASE_URL}${GOOGLE_REDIRECT_URI}`
+);
 
 export const lucia = new Lucia(adapter, {
 	sessionCookie: {
