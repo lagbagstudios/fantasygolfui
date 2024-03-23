@@ -1,6 +1,7 @@
 import { lucia } from '$lib/server/auth';
 import type { Handle } from '@sveltejs/kit';
 import { start_mongo } from '$lib/server/db';
+import { sequence } from '@sveltejs/kit/hooks';
 
 start_mongo()
 	.then(() => {
@@ -8,7 +9,17 @@ start_mongo()
 	})
 	.catch((e) => console.error(e));
 
-export const handle: Handle = async ({ event, resolve }) => {
+const first: Handle = async ({ event, resolve }) => {
+	const response = await resolve(event);
+
+	if (event.url.pathname.startsWith('/password-reset')) {
+		response.headers.set('Referrer-Policy', 'no-referrer');
+	}
+
+	return response;
+};
+
+const second: Handle = async ({ event, resolve }) => {
 	const sessionId = event.cookies.get(lucia.sessionCookieName);
 	if (!sessionId) {
 		event.locals.user = null;
@@ -33,5 +44,8 @@ export const handle: Handle = async ({ event, resolve }) => {
 	}
 	event.locals.user = user;
 	event.locals.session = session;
+
 	return resolve(event);
 };
+
+export const handle = sequence(first, second);

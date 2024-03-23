@@ -37,6 +37,7 @@
   "dependencies": {
     "@floating-ui/dom": "1.6.3",
     "@lucia-auth/adapter-mongodb": "^1.0.3",
+    "@sendgrid/mail": "^8.1.1",
     "arctic": "^1.2.1",
     "highlight.js": "11.9.0",
     "mongodb": "^6.5.0",

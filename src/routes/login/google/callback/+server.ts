@@ -26,12 +26,22 @@ export async function GET(event: RequestEvent): Promise<Response> {
 		});
 		const user = await googleUserResponse.json();
 
-		const existingUser = await User.findOne({ google_email: { $eq: user.email } });
+		const existingUser = await User.findOne({ email: { $eq: user.email } });
 
 		if (existingUser) {
+			await User.updateOne(
+				{ _id: existingUser._id },
+				{
+					$set: {
+						google_id: user.sub,
+						email_verified: user.email_verified
+					}
+				},
+				{ upsert: true }
+			);
 			const session = await lucia.createSession(existingUser._id, {
 				googleId: user.google_id,
-				googleEmail: user.google_email,
+				email: user.email,
 				givenName: user.given_name
 			});
 			const sessionCookie = lucia.createSessionCookie(session.id);
@@ -47,9 +57,10 @@ export async function GET(event: RequestEvent): Promise<Response> {
 				{
 					$set: {
 						_id: userId,
-						google_email: user.email,
+						email: user.email,
 						google_id: user.sub,
-						given_name: user.given_name
+						given_name: user.given_name,
+						email_verified: user.email_verified
 					}
 				},
 				{ upsert: true }
@@ -57,7 +68,7 @@ export async function GET(event: RequestEvent): Promise<Response> {
 
 			const session = await lucia.createSession(userId, {
 				googleId: user.google_id,
-				googleEmail: user.google_email,
+				email: user.email,
 				givenName: user.given_name
 			});
 			const sessionCookie = lucia.createSessionCookie(session.id);
