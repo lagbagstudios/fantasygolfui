@@ -3,6 +3,13 @@ import { fail, redirect } from '@sveltejs/kit';
 import { Argon2id } from 'oslo/password';
 import { validateEmail, validatePassword } from '$lib/util/validationUtil';
 import type { Actions } from './$types';
+import type { PageServerLoad } from '../$types';
+
+export const load: PageServerLoad = async (event) => {
+	if (event.locals.user) {
+		return redirect(302, '/');
+	}
+};
 
 export const actions: Actions = {
 	default: async (event) => {
