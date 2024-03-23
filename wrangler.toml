@@ -1,0 +1,11 @@
+name = "fantasygolfui"
+account_id = "84d8e8489c607bdef5ba797a078a32ba"
+
+main = "./.cloudflare/worker.js"
+site.bucket = "./.cloudflare/public"
+
+build.command = "npm run build"
+
+compatibility_date = "2021-11-12"
+compatibility_flags = ["nodejs_compat"]
+workers_dev = true
