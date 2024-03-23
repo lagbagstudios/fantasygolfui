@@ -1,7 +1,7 @@
 import { MongoClient } from 'mongodb';
 import { MONGO_URL } from '$env/static/private';
 
-const client = new MongoClient(MONGO_URL);
+const client = new MongoClient(MONGODB_URL);
 
 export function start_mongo() {
 	return client.connect();
