@@ -1,13 +1,13 @@
-import { League } from '$lib/server/league';
+import { League, getDefaultTeamName } from '$lib/server/league';
 import { redirect, type Actions, fail } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
-const joinLeague = async (joinCode: string, userId: string) => {
+const joinLeague = async (joinCode: string, userId: string, givenName: string) => {
 	await League.updateOne(
 		{ join_code: joinCode },
 		{
 			$push: {
-				teams: { user_id: userId }
+				teams: { user_id: userId, team_name: getDefaultTeamName(givenName) }
 			}
 		}
 	);
@@ -24,6 +24,7 @@ export const actions: Actions = {
 		const formData = await event.request.formData();
 		const joinCode = formData.get('code');
 		const userId = event.locals.user!!.id;
+		const givenName = event.locals.user!!.givenName;
 
 		if (typeof joinCode !== 'string' || joinCode === '') {
 			return fail(400, {
@@ -54,7 +55,7 @@ export const actions: Actions = {
 				needs_password: true
 			};
 		} else {
-			await joinLeague(joinCode, userId);
+			await joinLeague(joinCode, userId, givenName);
 			return redirect(302, '/leagues');
 		}
 	},
@@ -63,6 +64,7 @@ export const actions: Actions = {
 		const joinCode = formData.get('code');
 		const password = formData.get('password');
 		const userId = event.locals.user!!.id;
+		const givenName = event.locals.user!!.givenName;
 
 		if (typeof joinCode !== 'string' || joinCode === '') {
 			return fail(400, {
@@ -93,7 +95,7 @@ export const actions: Actions = {
 			});
 		}
 
-		await joinLeague(joinCode, userId);
+		await joinLeague(joinCode, userId, givenName);
 		return redirect(302, '/leagues');
 	}
 };

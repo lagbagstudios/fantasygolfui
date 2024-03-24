@@ -39,7 +39,13 @@ export const actions: Actions = {
 			});
 		}
 
-		await createLeague(event.locals.user!!.id, leagueName, isPrivate, leaguePassword?.toString());
+		await createLeague(
+			event.locals.user!!.id,
+			event.locals.user!!.givenName,
+			leagueName,
+			isPrivate,
+			leaguePassword?.toString()
+		);
 
 		return redirect(302, '/leagues');
 	}

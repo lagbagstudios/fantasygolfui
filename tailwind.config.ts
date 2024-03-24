@@ -19,7 +19,7 @@ export default {
 			themes: {
 				preset: [
 					{
-						name: 'rocket',
+						name: 'crimson',
 						enhancements: true
 					}
 				]

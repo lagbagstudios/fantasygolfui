@@ -3,7 +3,6 @@
 
 	export let form: ActionData;
 	let code = form?.code;
-	console.log(form);
 </script>
 
 <div class="container p-8">
@@ -27,7 +26,7 @@
 				/>
 				<button
 					type="submit"
-					class="py-3 px-12 inline-flex justify-center items-center gap-x-2 text-sm font-semibold variant-filled-secondary"
+					class="py-3 px-12 inline-flex justify-center items-center gap-x-2 text-sm font-semibold btn variant-filled-secondary"
 				>
 					Join
 				</button>
@@ -47,12 +46,12 @@
 					id="code"
 					name="code"
 					placeholder="Join Code"
-					class="py-3 px-4 block w-full text-sm disabled:pointer-events-none input"
+					class="py-3 mr-2 px-4 block w-full text-sm disabled:pointer-events-none input"
 					bind:value={code}
 				/>
 				<button
 					type="submit"
-					class="py-3 px-12 inline-flex justify-center items-center gap-x-2 text-sm font-semibold variant-filled-secondary"
+					class="py-3 px-12 inline-flex justify-center items-center gap-x-2 text-sm font-semibold btn variant-filled-secondary"
 				>
 					Join
 				</button>

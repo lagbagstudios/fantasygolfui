@@ -1,26 +1,8 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import type { ActionData } from '../$types';
-	import { getModalStore } from '@skeletonlabs/skeleton';
-	import type { ModalSettings } from '@skeletonlabs/skeleton';
-	import { goto } from '$app/navigation';
-
-	const modalStore = getModalStore();
 
 	export let form: ActionData;
-
-	const modal: ModalSettings = {
-		type: 'confirm',
-		title: 'Success!',
-		body: 'Your password has been reset',
-		response: (r: boolean) => {
-			goto('/login');
-		}
-	};
-
-	if (form?.success) {
-		modalStore.trigger(modal);
-	}
 </script>
 
 <form method="post" use:enhance>
@@ -60,3 +42,7 @@
 		</div>
 	</div>
 </form>
+
+{#if form?.success}
+	<a href="/login">Password reset successfully, click here to login.</a>
+{/if}

@@ -11,7 +11,7 @@ export const load: PageServerLoad = async (event) => {
 	const ownedLeagues = await League.find({ owner_id: userId }).toArray();
 
 	const joinedLeagues = await League.find({
-		teams: { user_id: userId },
+		'teams.user_id': userId,
 		owner_id: { $ne: userId }
 	}).toArray();
 
