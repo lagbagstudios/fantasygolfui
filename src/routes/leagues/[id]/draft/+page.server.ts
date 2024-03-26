@@ -43,6 +43,7 @@ export const actions: Actions = {
 
 		const formData = await event.request.formData();
 		const golfers = formData.get('golfers')?.toString();
+		const leagueId = event.params.id;
 
 		if (!golfers) {
 			return fail(400, {
@@ -61,7 +62,7 @@ export const actions: Actions = {
 		}
 
 		await League.updateOne(
-			{ 'teams.user_id': userId },
+			{ _id: new ObjectId(leagueId), 'teams.user_id': userId },
 			{
 				$set: {
 					'teams.$.golfers': golferData

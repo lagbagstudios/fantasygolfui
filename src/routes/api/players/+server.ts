@@ -1,5 +1,6 @@
 import { API_KEY } from '$env/static/private';
 import { GolferTable } from '$lib/server/golfers.js';
+import { League } from '$lib/server/league.js';
 import { json } from '@sveltejs/kit';
 
 export async function POST(event) {
@@ -10,11 +11,24 @@ export async function POST(event) {
 	const golfers: [Golfer] = await event.request.json();
 
 	await golfers.forEach((golfer) => {
+		League.updateMany(
+			{},
+			{
+				$set: {
+					'teams.$[].golfers.$[g].slashgolf_id': golfer.slashgolf_id
+				}
+			},
+			{
+				arrayFilters: [{ 'g.first_name': golfer.first_name, 'g.last_name': golfer.last_name }]
+			}
+		);
+
 		GolferTable.updateOne(
-			{ golfer_id: golfer.golfer_id },
+			{ first_name: golfer.first_name, last_name: golfer.last_name },
 			{
 				$set: {
 					golfer_id: golfer.golfer_id,
+					slashgolf_id: golfer.slashgolf_id,
 					first_name: golfer.first_name,
 					last_name: golfer.last_name,
 					price: golfer.price,
@@ -30,7 +44,9 @@ export async function POST(event) {
 		);
 	});
 
-	return json(golfers);
+	const returnValue = await GolferTable.find().toArray();
+
+	return json(returnValue);
 }
 
 export async function GET(event) {

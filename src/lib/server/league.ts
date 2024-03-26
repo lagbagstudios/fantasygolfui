@@ -26,6 +26,6 @@ export const createLeague = async (
 		league_name: name,
 		league_password: leaguePassword,
 		teams: [{ user_id: userId, team_name: getDefaultTeamName(givenName) }],
-		budget: 100
+		budget: 200
 	});
 };

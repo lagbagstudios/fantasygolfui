@@ -25,7 +25,8 @@ declare global {
 	}
 
 	interface Golfer {
-		golfer_id: string;
+		golfer_id?: string;
+		slashgolf_id?: string;
 		first_name: string;
 		last_name: string;
 		score?: number;
