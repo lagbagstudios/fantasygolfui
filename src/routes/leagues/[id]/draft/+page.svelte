@@ -37,7 +37,7 @@
 
 	$: remainingBudget =
 		selectedGolfers &&
-		(league.budget || 0) - selectedGolfers.reduce((n, { price }) => n + price, 0);
+		(league.budget || 0) - selectedGolfers.reduce((n, golfer) => n + (golfer?.price || 0), 0);
 
 	$: leagueId = $page.params.id;
 </script>
