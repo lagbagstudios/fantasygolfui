@@ -94,6 +94,10 @@
 				<th>Budget Remaining</th>
 				<td>${remainingBudget}</td>
 			</tr>
+			<tr>
+				<th>Players Drafted</th>
+				<td>{selectedGolfers.length}/6</td>
+			</tr>
 		</tfoot>
 	</table>
 </div>
