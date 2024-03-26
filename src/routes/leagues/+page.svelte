@@ -22,7 +22,8 @@
 		<ul class="pb-8">
 			{#each ownedLeagues as league}
 				<li>
-					<a href="/leagues/{league?._id}" class="btn variant-ringed">{league?.league_name}</a>
+					<a href="/leagues/{league?._id}" class="btn variant-ringed w-1/2">{league?.league_name}</a
+					>
 					<p class="inline-flex pl-12">Join Code: {league?.join_code}</p>
 				</li>
 			{/each}
@@ -33,7 +34,9 @@
 		<ul>
 			{#each joinedLeagues as league}
 				<li>
-					<a href="/leagues/{league?._id}" class="btn variant-ringed">{league?.league_name}</a>
+					<a href="/leagues/{league?._id}" class="btn variant-ringed w-full"
+						>{league?.league_name}</a
+					>
 				</li>
 			{/each}
 		</ul>

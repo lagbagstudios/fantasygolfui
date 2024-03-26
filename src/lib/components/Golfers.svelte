@@ -33,7 +33,7 @@
 				{#each golfers as golfer}
 					<tr>
 						<td>{golfer?.first_name} {golfer?.last_name}</td>
-						<td>{golfer?.score}</td>
+						<td>{golfer?.score || 0}</td>
 						<td>{golfer?.r1_score || 0}</td>
 						<td>{golfer?.r2_score || 0}</td>
 						<td>{golfer?.r3_score || 0}</td>

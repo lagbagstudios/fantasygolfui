@@ -1,6 +1,6 @@
 <script lang="ts">
 	import '../app.postcss';
-	import { AppShell, AppBar, autoModeWatcher } from '@skeletonlabs/skeleton';
+	import { AppShell, AppBar, autoModeWatcher, Toast, Modal } from '@skeletonlabs/skeleton';
 	import { enhance } from '$app/forms';
 
 	// Highlight JS
@@ -29,7 +29,7 @@
 	import Navigation from '$lib/components/Navigation.svelte';
 	storePopup.set({ computePosition, autoUpdate, flip, shift, offset, arrow });
 
-	// Used for Modals
+	// Used for Modals & Toasts
 	initializeStores();
 	const drawerStore = getDrawerStore();
 
@@ -47,6 +47,10 @@
 	<hr />
 	<Navigation authenticated={data.authenticated} />
 </Drawer>
+
+<Toast position="b" />
+
+<Modal />
 
 <AppShell slotSidebarLeft="bg-surface-500/5 w-0 lg:w-64">
 	<svelte:fragment slot="header">

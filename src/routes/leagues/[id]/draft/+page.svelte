@@ -1,20 +1,34 @@
 <script lang="ts">
+	import { enhance, applyAction } from '$app/forms';
+	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import type { PageData } from './$types';
+	import { getToastStore, type ToastSettings } from '@skeletonlabs/skeleton';
+
+	const toastStore = getToastStore();
 
 	export let data: PageData;
 
 	const golfers: [Golfer?] = data?.golfers || [];
 	const league: League = data?.league;
+	const myTeam: Team = data?.myTeam;
 
-	let selectedGolferIDs: (string | undefined)[] = [];
+	let selectedGolferIDs: (string | undefined)[] = myTeam.golfers?.map((g) => g.golfer_id) || [];
 
-	const onGolferSelected = (golferId: string | undefined) => {
-		if (typeof golferId !== 'string') return;
-		if (selectedGolferIDs.find((golfer) => golfer === golferId)) {
-			selectedGolferIDs = selectedGolferIDs.filter((id) => id !== golferId);
+	const onGolferSelected = (golfer: Golfer | undefined) => {
+		if (selectedGolferIDs.find((g) => g === golfer?.golfer_id)) {
+			selectedGolferIDs = selectedGolferIDs.filter((id) => id !== golfer?.golfer_id);
 		} else {
-			selectedGolferIDs.push(golferId);
+			if (golfer?.price && golfer?.price > remainingBudget) {
+				const t: ToastSettings = {
+					message: `Not enough budget remaining for ${golfer?.first_name} ${golfer?.last_name}.`,
+					timeout: 3000,
+					background: 'variant-filled-warning'
+				};
+				toastStore.trigger(t);
+			} else {
+				selectedGolferIDs.push(golfer?.golfer_id);
+			}
 		}
 		selectedGolferIDs = selectedGolferIDs;
 	};
@@ -35,11 +49,31 @@
 	<h1 class="h1 pt-8 sm:pt-0 sm:ml-4 text-center sm:w-full">Draft Board</h1>
 </div>
 
-<div class="sm:flex mx-auto space-x-8 w-full p-4">
-	<h2 class="h2 text-center sm:text-left">Your Team</h2>
-</div>
+<form
+	method="post"
+	use:enhance={({ formData }) => {
+		formData.append('golfers', JSON.stringify(selectedGolfers));
 
-<div class="table-container space-y-4 pb-8 sm:w-2/3 max-h-52">
+		return async ({ result }) => {
+			if (result.type === 'redirect') {
+				goto(result.location);
+			} else {
+				await applyAction(result);
+			}
+		};
+	}}
+>
+	<div class="flex mx-auto w-full p-4">
+		<h2 class="h2 w-full">Your Team</h2>
+		<button
+			type="submit"
+			disabled={selectedGolferIDs.length < 5}
+			class="btn variant-ghost-success ml-16 pl-12 pr-12">Draft Players</button
+		>
+	</div>
+</form>
+
+<div class="table-container space-y-4 pb-8 max-h-52 sm:max-h-screen">
 	<table class="table">
 		<thead>
 			<tr>
@@ -49,7 +83,7 @@
 		</thead>
 		<tbody>
 			{#each selectedGolfers as golfer}
-				<tr on:click={() => onGolferSelected(golfer?.golfer_id)}>
+				<tr on:click={() => onGolferSelected(golfer)}>
 					<td>{golfer?.first_name} {golfer?.last_name}</td>
 					<td>${golfer?.price}</td>
 				</tr>
@@ -68,7 +102,7 @@
 	<h2 class="h2 text-center sm:text-left">Tournament Field</h2>
 </div>
 
-<div class="overflow-scroll w-full max-h-96">
+<div class="overflow-scroll w-full max-h-96 sm:max-h-screen">
 	<div class="table-container">
 		<table class="table table-interactive">
 			<thead>
@@ -82,7 +116,7 @@
 				{#each golfers as golfer}
 					<tr
 						class:table-row-checked={selectedGolferIDs.includes(golfer?.golfer_id)}
-						on:click={() => onGolferSelected(golfer?.golfer_id)}
+						on:click={() => onGolferSelected(golfer)}
 					>
 						<td>{golfer?.first_name} {golfer?.last_name}</td>
 						<td>{golfer?.owgr || 'Unranked'}</td>

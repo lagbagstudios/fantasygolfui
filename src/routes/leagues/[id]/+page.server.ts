@@ -13,7 +13,10 @@ export const load: PageServerLoad = async (event) => {
 		};
 	}
 
-	const league = await League.findOne({ _id: new ObjectId(event.params.id) });
+	const league = await League.findOne({
+		_id: new ObjectId(event.params.id),
+		'teams.user_id': event.locals.user!!.id
+	});
 
 	if (!league) {
 		return {
@@ -22,9 +25,12 @@ export const load: PageServerLoad = async (event) => {
 		};
 	}
 
+	const draftEligible = new Date() < new Date('2024-04-11');
+
 	return {
 		league: JSON.parse(JSON.stringify(league)),
-		userId: event.locals.user!!.id
+		userId: event.locals.user!!.id,
+		draftEligible
 	};
 };
 
@@ -53,5 +59,33 @@ export const actions: Actions = {
 				}
 			}
 		);
+	},
+	leave: async (event) => {
+		const leagueId = event.params.id;
+		const userId = event.locals.user!!.id;
+
+		await League.updateOne(
+			{
+				_id: new ObjectId(leagueId),
+				owner_id: { $ne: userId }
+			},
+			{
+				$pull: {
+					teams: {
+						user_id: userId
+					}
+				}
+			}
+		);
+
+		return redirect(302, '/leagues');
+	},
+	close: async (event) => {
+		const leagueId = event.params.id;
+		const userId = event.locals.user!!.id;
+
+		await League.deleteOne({ _id: new ObjectId(leagueId), owner_id: userId });
+
+		return redirect(302, '/leagues');
 	}
 };
