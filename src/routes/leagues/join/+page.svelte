@@ -1,14 +1,16 @@
 <script lang="ts">
 	import type { ActionData } from './$types';
+	import { page } from '$app/stores';
+	import { enhance } from '$app/forms';
 
 	export let form: ActionData;
-	let code = form?.code;
+	let code = form?.code || $page.url.searchParams.get('code');
 </script>
 
 <div class="container p-8">
 	<h1 class="h1 pb-8">Join a League</h1>
 	{#if form?.needs_password}
-		<form method="post" action="?/password">
+		<form method="post" action="?/password" use:enhance>
 			<div class="pb-8">
 				<label class="label">
 					<span>League Code</span>
@@ -38,7 +40,7 @@
 	{/if}
 
 	{#if !form?.needs_password}
-		<form method="post" action="?/join">
+		<form method="post" action="?/join" use:enhance>
 			<label for="code">Join Code</label>
 			<div class="flex rounded-lg shadow-sm">
 				<input
