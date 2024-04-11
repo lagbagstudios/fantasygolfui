@@ -22,7 +22,7 @@
 	const draftEligible = data?.draftEligible;
 	let myTeamName: string | undefined = myTeam?.team_name;
 
-	const notifyDraftEnd = new Date() > new Date('2024-03-08');
+	const notifyDraftEnd = new Date() < new Date('2024-04-11');
 
 	if (notifyDraftEnd) {
 		const t: ToastSettings = {

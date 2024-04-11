@@ -7,8 +7,7 @@ export async function POST(event) {
 		return {
 			golfer_id: golfer.id as string,
 			first_name: golfer.first_name as string,
-			last_name: golfer.last_name as string,
-			price: 0
+			last_name: golfer.last_name as string
 		};
 	});
 
