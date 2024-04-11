@@ -1,6 +1,5 @@
 import { API_KEY } from '$env/static/private';
 import { GolferTable } from '$lib/server/golfers.js';
-import { League } from '$lib/server/league.js';
 import { json } from '@sveltejs/kit';
 
 export async function POST(event) {
