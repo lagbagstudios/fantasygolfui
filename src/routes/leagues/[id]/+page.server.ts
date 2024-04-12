@@ -2,6 +2,7 @@ import { redirect, type Actions, fail } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { League } from '$lib/server/league';
 import { ObjectId } from 'mongodb';
+import { updateGolferScores } from '$lib/server/golfers';
 
 export const load: PageServerLoad = async (event) => {
 	if (!event.locals.user) redirect(302, '/login');
@@ -26,6 +27,8 @@ export const load: PageServerLoad = async (event) => {
 	}
 
 	const draftEligible = new Date() < new Date('2024-04-11');
+
+	await updateGolferScores();
 
 	return {
 		league: JSON.parse(JSON.stringify(league)),
