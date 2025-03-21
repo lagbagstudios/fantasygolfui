@@ -43,7 +43,7 @@
 </script>
 
 <div class="container p-8">
-	<a href="/leagues/{leagueId}" class="btn variant-ghost w-full sm:w-auto sm:float-right"
+	<a href="/leagues/{leagueId}" class="btn variant-ghost w-full sm:w-auto sm:float-left"
 		>Return to League Home</a
 	>
 	<h1 class="h1 pt-8 sm:pt-0 sm:ml-4 text-center sm:w-full">Draft Board</h1>
@@ -127,7 +127,7 @@
 					>
 						<td>{golfer?.first_name} {golfer?.last_name}</td>
 						<td>{golfer?.owgr || 'Unranked'}</td>
-						<td>${golfer?.price}</td>
+						<td>${golfer?.price || 0}</td>
 					</tr>
 				{/each}
 			</tbody>

@@ -54,7 +54,7 @@ export const actions: Actions = {
 
 		const golferData: [Golfer] = JSON.parse(golfers);
 
-		if (golferData.length < 5) {
+		if (golferData.length < 6) {
 			return fail(400, {
 				message: 'You must draft 6 players.',
 				draft_error: true
