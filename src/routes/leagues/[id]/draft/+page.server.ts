@@ -20,7 +20,7 @@ export const load: PageServerLoad = async (event) => {
 	golfers.sort((a, b) => {
 		if ((a?.price || 99999) < (b?.price || 99999)) {
 			return 1;
-		} else if ((a?.price || 0) > (b?.price || 0)) {
+		} else if ((a?.price || 99999) > (b?.price || 99999)) {
 			return -1;
 		} else {
 			return 0;
