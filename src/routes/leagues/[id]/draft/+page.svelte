@@ -64,7 +64,7 @@
 	}}
 >
 	<div class="flex mx-auto w-full p-4">
-		<h2 class="h2 w-full">Your Team</h2>
+		<h2 class="h2 w-full">Your Bids</h2>
 		<button
 			type="submit"
 			disabled={selectedGolferIDs.length < 6}
@@ -73,32 +73,30 @@
 	</div>
 </form>
 
-<div class="table-container space-y-4 pb-8 max-h-52 sm:max-h-screen">
+<div class="table-container space-y-4 pb-8 md:max-h-screen">
 	<table class="table table-interactive">
 		<thead>
 			<tr>
 				<th>Golfer</th>
 				<th>Your Bid</th>
-				<th>Highest Bid</th>
+				<th>Current Highest Bid</th>
 			</tr>
 		</thead>
 		<tbody>
 			{#each selectedGolfers as golfer}
 				<tr on:click={() => onGolferSelected(golfer)}>
 					<td>{golfer?.first_name} {golfer?.last_name}</td>
-					<td>${golfer?.price}</td>
+					<td>${golfer?.price || 0}</td>
 				</tr>
 			{/each}
 		</tbody>
 		<tfoot>
 			<tr>
 				<th>Budget Remaining</th>
-				<td></td>
 				<td>${remainingBudget}</td>
 			</tr>
 			<tr>
 				<th>Players Drafted</th>
-				<td></td>
 				<td>{selectedGolfers.length}/6</td>
 			</tr>
 		</tfoot>
@@ -109,14 +107,14 @@
 	<h2 class="h2 text-center sm:text-left">Tournament Field</h2>
 </div>
 
-<div class="overflow-scroll w-full max-h-96 sm:max-h-screen">
+<div class="overflow-scroll w-full md:max-h-screen">
 	<div class="table-container">
 		<table class="table table-interactive">
 			<thead>
 				<tr>
 					<th>Golfer</th>
-					<th>Ranking</th>
-					<th>Current Bid</th>
+					<th>World Golf Ranking</th>
+					<th>Current Highest Bid</th>
 				</tr>
 			</thead>
 			<tbody>
