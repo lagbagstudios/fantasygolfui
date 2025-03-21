@@ -78,7 +78,8 @@
 		<thead>
 			<tr>
 				<th>Golfer</th>
-				<th>Price</th>
+				<th>Your Bid</th>
+				<th>Highest Bid</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -92,10 +93,12 @@
 		<tfoot>
 			<tr>
 				<th>Budget Remaining</th>
+				<td></td>
 				<td>${remainingBudget}</td>
 			</tr>
 			<tr>
 				<th>Players Drafted</th>
+				<td></td>
 				<td>{selectedGolfers.length}/6</td>
 			</tr>
 		</tfoot>
@@ -113,7 +116,7 @@
 				<tr>
 					<th>Golfer</th>
 					<th>Ranking</th>
-					<th>Price</th>
+					<th>Current Bid</th>
 				</tr>
 			</thead>
 			<tbody>
