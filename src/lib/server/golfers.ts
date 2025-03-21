@@ -10,7 +10,7 @@ const roundSum = (roundScores: [number]) => {
 export const updateGolferScores = async () => {
 	console.log('Updating golfer scores...');
 	const mastersResponse = await fetch(
-		'https://www.masters.com/en_US/scores/feeds/2024/scores.json'
+		'https://www.masters.com/en_US/scores/feeds/2025/scores.json'
 	);
 	const mastersLeaderboardData = await mastersResponse.json();
 	const golfers = mastersLeaderboardData.data.player.map((golfer: any) => {
