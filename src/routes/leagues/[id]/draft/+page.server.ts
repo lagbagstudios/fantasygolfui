@@ -18,9 +18,9 @@ export const load: PageServerLoad = async (event) => {
 	const myTeam = league?.teams?.find((team) => team.user_id === event.locals.user!!.id);
 
 	golfers.sort((a, b) => {
-		if ((a?.price || 99999) < (b?.price || 99999)) {
+		if ((a?.price || 0) < (b?.price || 0)) {
 			return 1;
-		} else if ((a?.price || 99999) > (b?.price || 99999)) {
+		} else if ((a?.price || 0) > (b?.price || 0)) {
 			return -1;
 		} else {
 			return 0;
