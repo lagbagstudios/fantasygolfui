@@ -67,14 +67,14 @@
 		<h2 class="h2 w-full">Your Team</h2>
 		<button
 			type="submit"
-			disabled={selectedGolferIDs.length < 5}
+			disabled={selectedGolferIDs.length < 6}
 			class="btn variant-ghost-success ml-16 pl-12 pr-12">Draft Players</button
 		>
 	</div>
 </form>
 
 <div class="table-container space-y-4 pb-8 max-h-52 sm:max-h-screen">
-	<table class="table">
+	<table class="table table-interactive">
 		<thead>
 			<tr>
 				<th>Golfer</th>

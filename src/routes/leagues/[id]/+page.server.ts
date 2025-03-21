@@ -26,7 +26,7 @@ export const load: PageServerLoad = async (event) => {
 		};
 	}
 
-	const draftEligible = new Date() < new Date('2024-04-11');
+	const draftEligible = new Date() < new Date('2025-04-10');
 
 	await updateGolferScores();
 

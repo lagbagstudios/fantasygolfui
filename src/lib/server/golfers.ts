@@ -13,7 +13,7 @@ export const updateGolferScores = async () => {
 		'https://www.masters.com/en_US/scores/feeds/2025/scores.json'
 	);
 	const mastersLeaderboardData = await mastersResponse.json();
-	const golfers = mastersLeaderboardData.data.player.map((golfer: any) => {
+	const golfers = mastersLeaderboardData.data?.player?.map((golfer: any) => {
 		const r1_score = roundSum(golfer.round1.scores);
 		const r2_score = roundSum(golfer.round2.scores);
 		const r3_score = golfer.status === 'C' ? 75 : roundSum(golfer.round4.scores);
@@ -31,7 +31,7 @@ export const updateGolferScores = async () => {
 		};
 	});
 
-	await golfers.forEach((golfer: any) => {
+	await golfers?.forEach((golfer: any) => {
 		League.updateMany(
 			{},
 			{
