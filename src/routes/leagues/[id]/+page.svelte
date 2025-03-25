@@ -4,7 +4,7 @@
 	import XIcon from '$lib/components/XIcon.svelte';
 	import type { ActionData, PageServerData } from './$types';
 	import Golfers from '$lib/components/Golfers.svelte';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { getToastStore, type ModalSettings, type ToastSettings } from '@skeletonlabs/skeleton';
 	import { getModalStore } from '@skeletonlabs/skeleton';
 	import { applyAction, enhance } from '$app/forms';
@@ -59,6 +59,10 @@
 		});
 </script>
 
+<svelte:head>
+	<title>{league?.league_name || 'Unknown League'} - My Team</title>
+</svelte:head>
+
 {#if data?.not_found}
 	<div class="container p-8 space-y-8">
 		<h2 class="h2">Could not find league</h2>
@@ -96,7 +100,7 @@
 					>
 				{/if}
 				{#if draftEligible && myTeam.golfers?.length}
-					<a href="/leagues/{$page.params.id}/draft" class="btn variant-filled-warning"
+					<a href="/leagues/{page.params.id}/draft" class="btn variant-filled-warning"
 						>Edit Your Team</a
 					>
 				{/if}
@@ -110,7 +114,7 @@
 		{#if myTeam.golfers && myTeam.golfers.length > 0}
 			<Golfers golfers={myTeam.golfers} />
 		{:else}
-			<a href="/leagues/{$page.params.id}/draft" class="btn variant-filled-success w-full"
+			<a href="/leagues/{page.params.id}/draft" class="btn variant-filled-success w-full"
 				>Draft Your Team</a
 			>
 		{/if}

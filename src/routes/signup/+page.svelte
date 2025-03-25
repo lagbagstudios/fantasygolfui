@@ -5,6 +5,10 @@
 	export let form: ActionData;
 </script>
 
+<svelte:head>
+	<title>Sign Up</title>
+</svelte:head>
+
 <form method="post" use:enhance>
 	<div class="container mx-auto p-8 space-y-8">
 		<h1 class="h1 text-center sm:text-left">Sign Up</h1>

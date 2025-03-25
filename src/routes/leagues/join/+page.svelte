@@ -7,6 +7,10 @@
 	let code = form?.code || $page.url.searchParams.get('code');
 </script>
 
+<svelte:head>
+	<title>Join a League</title>
+</svelte:head>
+
 <div class="container p-8">
 	<h1 class="h1 pb-8">Join a League</h1>
 	{#if form?.needs_password}

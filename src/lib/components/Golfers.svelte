@@ -1,5 +1,5 @@
 <script lang="ts">
-	export let golfers: [Golfer?] = [];
+	export let golfers: Golfer[] = [];
 
 	let totalScore: number = 0;
 	let r1Score: number = 0;

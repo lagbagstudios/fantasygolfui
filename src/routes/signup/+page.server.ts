@@ -16,7 +16,9 @@ export const actions: Actions = {
 			return fail(400, {
 				email,
 				message: 'Invalid email address',
-				email_error: true
+				email_error: true,
+				name_error: false,
+				password_error: false
 			});
 		}
 
@@ -27,7 +29,9 @@ export const actions: Actions = {
 			return fail(400, {
 				email,
 				message: 'Please enter your first name',
-				name_error: true
+				email_error: false,
+				name_error: true,
+				password_error: false
 			});
 		}
 
@@ -35,7 +39,9 @@ export const actions: Actions = {
 			return fail(400, {
 				email,
 				message: 'Passwords must be at least 6 characters',
-				password_error: true
+				password_error: true,
+				email_error: false,
+				name_error: false
 			});
 		}
 
@@ -45,7 +51,9 @@ export const actions: Actions = {
 			return fail(400, {
 				email,
 				message: 'User already exists with this email',
-				email_error: true
+				email_error: true,
+				name_error: false,
+				password_error: false
 			});
 		}
 

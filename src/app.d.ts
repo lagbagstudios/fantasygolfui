@@ -16,12 +16,15 @@ declare global {
 		league_name: string;
 		teams?: [Team];
 		budget?: number;
+		draft_type?: DraftType;
+		draft_board?: Golfer[];
 	}
 
 	interface Team {
 		user_id: string;
 		team_name: string;
-		golfers?: [Golfer];
+		golfers?: Golfer[];
+		bids?: Golfer[];
 	}
 
 	interface Golfer {
@@ -36,6 +39,10 @@ declare global {
 		r4_score?: number;
 		price?: number;
 		owgr?: number;
+		current_bid?: number;
+		current_bidder_id?: string;
+		winning_bid?: number;
+		winning_bidder_id?: string;
 	}
 }
 

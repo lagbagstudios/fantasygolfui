@@ -6,6 +6,10 @@
 	const joinedLeagues: [League?] = data.joinedLeagues;
 </script>
 
+<svelte:head>
+	<title>My Leagues</title>
+</svelte:head>
+
 {#if ownedLeagues.length === 0 && joinedLeagues.length === 0}
 	<div class="container p-8">
 		<h3 class="h3 pb-4">You don't have any leagues yet!</h3>
@@ -21,7 +25,7 @@
 		<h2 class="h2 pb-8">My Leagues</h2>
 		<ul class="pb-8">
 			{#each ownedLeagues as league}
-				<li>
+				<li class="pb-2">
 					<a href="/leagues/{league?._id}" class="btn variant-ringed w-1/2">{league?.league_name}</a
 					>
 					<p class="inline-flex pl-12">Join Code: {league?.join_code}</p>

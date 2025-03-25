@@ -16,6 +16,7 @@ export const load: PageServerLoad = async (event) => {
 	const golfers = await GolferTable.find().toArray();
 	const league = await League.findOne({ _id: new ObjectId(event.params.id) });
 	const myTeam = league?.teams?.find((team) => team.user_id === event.locals.user!!.id);
+	const auctionBoard = league?.draft_board;
 
 	golfers.sort((a, b) => {
 		if ((a?.owgr || 99999) > (b?.owgr || 99999)) {
@@ -30,7 +31,8 @@ export const load: PageServerLoad = async (event) => {
 	return {
 		golfers: JSON.parse(JSON.stringify(golfers)),
 		league: JSON.parse(JSON.stringify(league)),
-		myTeam: JSON.parse(JSON.stringify(myTeam))
+		myTeam: JSON.parse(JSON.stringify(myTeam)),
+		auctionBoard: JSON.parse(JSON.stringify(auctionBoard))
 	};
 };
 
@@ -43,6 +45,7 @@ export const actions: Actions = {
 
 		const formData = await event.request.formData();
 		const golfers = formData.get('golfers')?.toString();
+		const draft_type = formData.get('draft_type')?.toString();
 		const leagueId = event.params.id;
 
 		if (!golfers) {
@@ -52,24 +55,74 @@ export const actions: Actions = {
 			});
 		}
 
-		const golferData: [Golfer] = JSON.parse(golfers);
+		let golferData: Golfer[] = JSON.parse(golfers);
 
-		if (golferData.length < 6) {
-			return fail(400, {
-				message: 'You must draft 6 players.',
-				draft_error: true
-			});
-		}
-
-		await League.updateOne(
-			{ _id: new ObjectId(leagueId), 'teams.user_id': userId },
-			{
-				$set: {
-					'teams.$.golfers': golferData
-				}
+		if (draft_type === 'auction') {
+			if (golferData.some((golfer) => (golfer.current_bid ?? 0) < (golfer.winning_bid || 0))) {
+				return fail(400, {
+					message: 'One or more bids are lower than the current winning bid.',
+					draft_error: true
+				});
 			}
-		);
 
-		return redirect(302, `/leagues/${event.params.id}`);
+			golferData = golferData.map((golfer) => {
+				golfer.winning_bid = parseInt(golfer.current_bid?.toString() || '0');
+				golfer.winning_bidder_id = userId;
+				golfer.current_bid = 0;
+				golfer.current_bidder_id = '';
+
+				return golfer;
+			});
+
+			const league = await League.findOne({ _id: new ObjectId(leagueId) });
+			if (!league) {
+				return fail(404, {
+					message: 'League not found',
+					league_error: true
+				});
+			}
+
+			const mergedGolfers = league.draft_board?.map((existingGolfer) => {
+				const golfer = golferData.find((g) => g.golfer_id === existingGolfer.golfer_id);
+				if (golfer) {
+					return { ...existingGolfer, ...golfer };
+				}
+				return existingGolfer;
+			});
+
+			golferData = golferData.map((golfer) => {
+				golfer.current_bid = parseInt(golfer.winning_bid?.toString() || '0');
+				golfer.current_bidder_id = userId;
+
+				return golfer;
+			});
+
+			await League.updateOne(
+				{ _id: new ObjectId(leagueId), 'teams.user_id': userId },
+				{
+					$set: { draft_board: mergedGolfers, 'teams.$.bids': golferData }
+				}
+			);
+
+			return {
+				golferData
+			};
+		} else if (draft_type === 'manual') {
+			if (golferData.length < 6) {
+				return fail(400, {
+					message: 'You must draft 6 players.',
+					draft_error: true
+				});
+			}
+			await League.updateOne(
+				{ _id: new ObjectId(leagueId), 'teams.user_id': userId },
+				{
+					$set: {
+						'teams.$.golfers': golferData
+					}
+				}
+			);
+			return redirect(302, `/leagues/${event.params.id}`);
+		}
 	}
 };
