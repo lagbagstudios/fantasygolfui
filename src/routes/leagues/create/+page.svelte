@@ -49,6 +49,9 @@
 				/>
 			</label>
 		</div>
+		{#if form?.draft_type_error}
+			<span class="text-error-500">{form?.message}</span>
+		{/if}
 		<label class="flex items-center space-x-2">
 			<input
 				class="checkbox"

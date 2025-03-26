@@ -5,8 +5,12 @@
 	import type { ActionData, PageServerData } from './$types';
 	import Golfers from '$lib/components/Golfers.svelte';
 	import { page } from '$app/state';
-	import { getToastStore, type ModalSettings, type ToastSettings } from '@skeletonlabs/skeleton';
-	import { getModalStore } from '@skeletonlabs/skeleton';
+	import {
+		getToastStore,
+		getModalStore,
+		type ModalSettings,
+		type ToastSettings
+	} from '@skeletonlabs/skeleton';
 	import { applyAction, enhance } from '$app/forms';
 	import { goto } from '$app/navigation';
 

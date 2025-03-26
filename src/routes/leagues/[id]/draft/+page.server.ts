@@ -32,12 +32,13 @@ export const load: PageServerLoad = async (event) => {
 		golfers: JSON.parse(JSON.stringify(golfers)),
 		league: JSON.parse(JSON.stringify(league)),
 		myTeam: JSON.parse(JSON.stringify(myTeam)),
-		auctionBoard: JSON.parse(JSON.stringify(auctionBoard))
+		auctionBoard: JSON.parse(JSON.stringify(auctionBoard)),
+		userId: event.locals.user!!.id
 	};
 };
 
 export const actions: Actions = {
-	default: async (event) => {
+	submit: async (event) => {
 		if (!event.locals.user) {
 			return fail(401, {});
 		}
@@ -58,22 +59,6 @@ export const actions: Actions = {
 		let golferData: Golfer[] = JSON.parse(golfers);
 
 		if (draft_type === 'auction') {
-			if (golferData.some((golfer) => (golfer.current_bid ?? 0) < (golfer.winning_bid || 0))) {
-				return fail(400, {
-					message: 'One or more bids are lower than the current winning bid.',
-					draft_error: true
-				});
-			}
-
-			golferData = golferData.map((golfer) => {
-				golfer.winning_bid = parseInt(golfer.current_bid?.toString() || '0');
-				golfer.winning_bidder_id = userId;
-				golfer.current_bid = 0;
-				golfer.current_bidder_id = '';
-
-				return golfer;
-			});
-
 			const league = await League.findOne({ _id: new ObjectId(leagueId) });
 			if (!league) {
 				return fail(404, {
@@ -82,9 +67,20 @@ export const actions: Actions = {
 				});
 			}
 
+			let currentBid = 0;
+			golferData = golferData
+				.filter((golfer) => golfer.current_bid !== 0)
+				.map((golfer) => {
+					currentBid = parseInt(golfer.current_bid?.toString() || '0');
+					golfer.winning_bid = currentBid;
+					golfer.winning_bidder_id = userId;
+
+					return golfer;
+				});
+
 			const mergedGolfers = league.draft_board?.map((existingGolfer) => {
 				const golfer = golferData.find((g) => g.golfer_id === existingGolfer.golfer_id);
-				if (golfer) {
+				if (golfer && (golfer.winning_bid ?? 0) > (existingGolfer.winning_bid ?? 1)) {
 					return { ...existingGolfer, ...golfer };
 				}
 				return existingGolfer;
@@ -124,5 +120,13 @@ export const actions: Actions = {
 			);
 			return redirect(302, `/leagues/${event.params.id}`);
 		}
+	},
+	end_auction_round: async (event) => {
+		// put all winning bids on the respective teams
+		// remove all winning bids from the draft board
+		// set the current_bid to 0 for all golfers
+		// reset bids for each team
+		const leagueId = event.params.id;
+		return {};
 	}
 };

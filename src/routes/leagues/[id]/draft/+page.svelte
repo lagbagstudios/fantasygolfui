@@ -3,9 +3,14 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import type { PageData, ActionData } from './$types';
-	import { getToastStore, type ToastSettings } from '@skeletonlabs/skeleton';
-
+	import {
+		getToastStore,
+		getModalStore,
+		type ModalSettings,
+		type ToastSettings
+	} from '@skeletonlabs/skeleton';
 	const toastStore = getToastStore();
+	const modalStore = getModalStore();
 
 	export let data: PageData;
 	export let form: ActionData;
@@ -13,14 +18,15 @@
 	const golfers: Golfer[] = data?.golfers || [];
 	const league: League = data?.league;
 	const myTeam: Team = data?.myTeam;
+	const userId = data?.userId;
 
 	let selectedGolferIDs: (string | undefined)[] = myTeam?.golfers?.map((g) => g.golfer_id) || [];
 	let bidGolferIDs: (string | undefined)[] =
-		form?.golferData?.map((g) => g.golfer_id) || myTeam?.bids?.map((g) => g.golfer_id) || [];
+		form?.golferData?.map((g) => g.golfer_id) || data?.myTeam?.bids?.map((g) => g.golfer_id) || [];
 
 	const onGolferSelected = (golfer: Golfer | undefined) => {
 		if (league?.draft_type === 'auction') {
-			if (bidGolferIDs.find((g) => g === golfer?.golfer_id)) {
+			if (bidGolferIDs.find((g) => g === golfer?.golfer_id) && golfer?.current_bid === 0) {
 				// Remove golfer from bidGolfers
 				bidGolferIDs = bidGolferIDs.filter((id) => id !== golfer?.golfer_id);
 			} else {
@@ -32,7 +38,9 @@
 					};
 					toastStore.trigger(t);
 				} else {
-					bidGolferIDs.push(golfer?.golfer_id);
+					if (!bidGolferIDs.find((g) => g === golfer?.golfer_id)) {
+						bidGolferIDs.push(golfer?.golfer_id);
+					}
 				}
 			}
 			bidGolferIDs = bidGolferIDs;
@@ -56,28 +64,64 @@
 		}
 	};
 
+	const confirmEndDraftRoundModal = () =>
+		new Promise((resolve) => {
+			const modal: ModalSettings = {
+				type: 'confirm',
+				title: 'End Auction Round?',
+				body: `Are you sure you want to end the auction round?`,
+				response: (r: boolean) => {
+					resolve(r);
+				}
+			};
+			modalStore.trigger(modal);
+		});
+
+	const isWinningBid = (golfer: Golfer) => {
+		const matchingGolfer = data?.league?.draft_board?.find(
+			(bid: Golfer) => bid.golfer_id === golfer.golfer_id
+		);
+		return matchingGolfer?.winning_bidder_id === myTeam?.user_id;
+	};
+
 	bidGolferIDs = bidGolferIDs;
 
 	$: selectedGolfers = golfers.filter((golfer) => selectedGolferIDs.includes(golfer?.golfer_id));
-	$: bidGolfers = data?.auctionBoard?.filter((golfer: Golfer) =>
-		bidGolferIDs.includes(golfer?.golfer_id)
-	);
+
+	$: bidGolfers = data?.auctionBoard
+		?.filter((golfer: Golfer) => bidGolferIDs.includes(golfer.golfer_id))
+		.map((golfer: Golfer) => {
+			const myBid = data?.myTeam?.bids?.find((bid: Golfer) => bid.golfer_id === golfer.golfer_id);
+			if (myBid) myBid.winning_bid = golfer.winning_bid;
+			return myBid || golfer;
+		});
 
 	$: remainingBudget =
-		selectedGolfers &&
-		(league?.budget || 0) - selectedGolfers.reduce((n, golfer) => n + (golfer?.price || 0), 0);
+		league?.draft_type === 'manual'
+			? selectedGolfers &&
+				(league?.budget || 0) - selectedGolfers.reduce((n, golfer) => n + (golfer?.price || 0), 0)
+			: bidGolfers &&
+				(league?.budget || 0) -
+					bidGolfers.reduce((n: number, golfer: Golfer) => n + (golfer?.current_bid || 0), 0);
 
 	$: leagueId = page.params.id;
+
+	$: autoRefresh = league?.draft_type === 'auction';
 </script>
+
+{#if autoRefresh}
+	<meta http-equiv="refresh" content="30" />
+{/if}
 
 <svelte:head>
 	<title>{league?.league_name || 'Unknown League'} - Draft</title>
 </svelte:head>
 
-<div class="container p-8">
+<div class="container p-4">
 	<a href="/leagues/{leagueId}" class="btn variant-ghost w-full sm:w-auto sm:float-left"
 		>Return to League Home</a
 	>
+
 	{#if form?.draft_error}
 		<span class="text-error-500 p-4">{form?.message}</span>
 	{/if}
@@ -168,13 +212,13 @@
 	{:else if league?.draft_type === 'auction'}
 		<form
 			method="post"
+			action="?/submit"
 			use:enhance={({ formData }) => {
 				formData.append('golfers', JSON.stringify(bidGolfers));
 				formData.append('draft_type', 'auction');
 
 				return async ({ result, update }) => {
-					await update({ reset: false, invalidateAll: false });
-					console.log(result);
+					await update();
 					if (result.type === 'redirect') {
 						goto(result.location);
 					} else {
@@ -203,11 +247,11 @@
 					</thead>
 					<tbody>
 						{#each bidGolfers as golfer}
-							<tr>
+							<tr class:table-row-checked={isWinningBid(golfer)}>
 								<td on:click={() => onGolferSelected(golfer)}
-									>{golfer?.first_name} {golfer?.last_name}</td
+									>{golfer.first_name} {golfer.last_name}</td
 								>
-								<td><input bind:value={golfer.current_bid} /></td>
+								<td><input type="number" class="input" bind:value={golfer.current_bid} /></td>
 								<td on:click={() => onGolferSelected(golfer)}>${golfer.winning_bid || 0}</td>
 							</tr>
 						{/each}
@@ -222,6 +266,31 @@
 			</div>
 		</form>
 
+		{#if league?.owner_id === userId}
+			<form
+				method="post"
+				action="?/end_auction_round"
+				use:enhance={async ({ cancel }) => {
+					await confirmEndDraftRoundModal().then((res) => {
+						if (!res) {
+							cancel();
+						}
+					});
+					return async ({ result }) => {
+						if (result.type === 'redirect') {
+							goto(result.location);
+						} else {
+							await applyAction(result);
+						}
+					};
+				}}
+			>
+				<button class="btn variant-ghost-warning inline-flex w-full p-4 mb-4"
+					>End Auction Round</button
+				>
+			</form>
+		{/if}
+
 		<div class="flex mx-auto w-full p-4">
 			<h2 class="h2 w-full">Your Team</h2>
 		</div>
@@ -235,7 +304,7 @@
 					</tr>
 				</thead>
 				<tbody>
-					{#each myTeam?.golfers || [] as golfer}
+					{#each data?.myTeam?.golfers || [] as golfer}
 						<tr on:click={() => onGolferSelected(golfer)}>
 							<td>{golfer?.first_name} {golfer?.last_name}</td>
 							<td>${golfer?.winning_bid || 0}</td>
@@ -266,9 +335,9 @@
 						</tr>
 					</thead>
 					<tbody>
-						{#each data.auctionBoard as golfer}
+						{#each data?.auctionBoard as golfer}
 							<tr
-								class:table-row-checked={selectedGolferIDs.includes(golfer?.golfer_id)}
+								class:table-row-checked={bidGolferIDs.includes(golfer?.golfer_id)}
 								on:click={() => onGolferSelected(golfer)}
 							>
 								<td>{golfer?.first_name} {golfer?.last_name}</td>

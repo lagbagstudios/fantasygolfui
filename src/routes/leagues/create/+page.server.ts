@@ -38,7 +38,7 @@ export const actions: Actions = {
 			});
 		}
 
-		if (typeof draftType !== 'string' || !['snake', 'auction'].includes(draftType)) {
+		if (typeof draftType !== 'string' || !['manual', 'auction'].includes(draftType)) {
 			return fail(400, {
 				message: 'Invalid draft type',
 				draft_type_error: true,
