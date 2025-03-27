@@ -2,6 +2,10 @@
 	import { enhance } from '$app/forms';
 </script>
 
+<svelte:head>
+	<title>Verify Email</title>
+</svelte:head>
+
 <form method="post" action="?/verify" use:enhance>
 	<div class="container mx-auto p-8 space-y-8">
 		<h1 class="h1">Verify your Email Address</h1>

@@ -3,7 +3,12 @@
 
 	export let form: ActionData;
 	let isPrivate = false;
+	let leagueName = form?.leagueName || '';
 </script>
+
+<svelte:head>
+	<title>Create a League</title>
+</svelte:head>
 
 <form method="post">
 	<div class="container p-8 space-y-8 mx-auto">
@@ -17,9 +22,34 @@
 				placeholder="League Name"
 				id="name"
 				name="name"
+				bind:value={leagueName}
 			/>
 		</label>
 		{#if form?.name_error}
+			<span class="text-error-500">{form?.message}</span>
+		{/if}
+		<div class="grid grid-cols-2 gap-4">
+			<label class="label">
+				<span>Draft Type</span>
+				<select class="select" title="Draft Type" id="draft_type" name="draft_type">
+					<option value="auction">Auction</option>
+					<option value="manual">Manual</option>
+				</select>
+			</label>
+			<label class="label">
+				<span>Budget</span>
+				<input
+					class="input"
+					type="number"
+					title="Budget"
+					placeholder="Budget"
+					id="budget"
+					name="budget"
+					min="0"
+				/>
+			</label>
+		</div>
+		{#if form?.draft_type_error}
 			<span class="text-error-500">{form?.message}</span>
 		{/if}
 		<label class="flex items-center space-x-2">
