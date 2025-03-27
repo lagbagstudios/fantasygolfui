@@ -26,7 +26,21 @@ export const load: PageServerLoad = async (event) => {
 		return error(403, 'You are not in this league');
 	}
 
+	if (!auctionBoard && league.draft_type === 'auction') {
+		return error(404, 'Draft board not found');
+	}
+
 	golfers.sort((a, b) => {
+		if ((a?.owgr || 99999) > (b?.owgr || 99999)) {
+			return 1;
+		} else if ((a?.owgr || 99999) < (b?.owgr || 99999)) {
+			return -1;
+		} else {
+			return 0;
+		}
+	});
+
+	auctionBoard?.sort((a, b) => {
 		if ((a?.owgr || 99999) > (b?.owgr || 99999)) {
 			return 1;
 		} else if ((a?.owgr || 99999) < (b?.owgr || 99999)) {

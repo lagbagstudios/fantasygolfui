@@ -22,7 +22,9 @@
 
 	let selectedGolferIDs: (string | undefined)[] = myTeam?.golfers?.map((g) => g.golfer_id) || [];
 	let bidGolferIDs: (string | undefined)[] =
-		form?.golferData?.map((g) => g.golfer_id) || data?.myTeam?.bids?.map((g) => g.golfer_id) || [];
+		form?.golferData?.map((g) => g.golfer_id) ||
+		data?.myTeam?.bids?.map((g: Golfer) => g.golfer_id) ||
+		[];
 
 	const onGolferSelected = (golfer: Golfer | undefined) => {
 		if (league?.draft_type === 'auction') {
