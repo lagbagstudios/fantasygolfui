@@ -102,7 +102,11 @@
 				(league?.budget || 0) - selectedGolfers.reduce((n, golfer) => n + (golfer?.price || 0), 0)
 			: bidGolfers &&
 				(league?.budget || 0) -
-					bidGolfers.reduce((n: number, golfer: Golfer) => n + (golfer?.current_bid || 0), 0);
+					bidGolfers.reduce((n: number, golfer: Golfer) => n + (golfer?.current_bid || 0), 0) -
+					(myTeam?.golfers?.reduce(
+						(n: number, golfer: Golfer) => n + (golfer?.winning_bid || 0),
+						0
+					) ?? 0);
 
 	$: leagueId = page.params.id;
 
@@ -110,7 +114,7 @@
 </script>
 
 {#if autoRefresh}
-	<meta http-equiv="refresh" content="30" />
+	<meta http-equiv="refresh" content="120" />
 {/if}
 
 <svelte:head>
@@ -216,6 +220,7 @@
 			use:enhance={({ formData }) => {
 				formData.append('golfers', JSON.stringify(bidGolfers));
 				formData.append('draft_type', 'auction');
+				formData.append('remainingBudget', remainingBudget);
 
 				return async ({ result, update }) => {
 					await update();
@@ -232,7 +237,9 @@
 				<button
 					type="submit"
 					class="btn variant-ghost-success ml-16 pl-12 pr-12"
-					disabled={bidGolferIDs.length < 1}>Submit Bids</button
+					disabled={bidGolferIDs.length < 1 ||
+						remainingBudget <= 0 ||
+						bidGolferIDs.length + (myTeam.golfers?.length ?? 0) > 6}>Submit Bids</button
 				>
 			</div>
 
@@ -276,7 +283,9 @@
 							cancel();
 						}
 					});
-					return async ({ result }) => {
+					return async ({ result, update }) => {
+						await update();
+						remainingBudget = remainingBudget;
 						if (result.type === 'redirect') {
 							goto(result.location);
 						} else {

@@ -1,4 +1,4 @@
-import { fail, redirect } from '@sveltejs/kit';
+import { error, fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { GolferTable } from '$lib/server/golfers';
 import { League } from '$lib/server/league';
@@ -10,13 +10,21 @@ export const load: PageServerLoad = async (event) => {
 	}
 
 	if (!ObjectId.isValid(event.params.id)) {
-		return {};
+		return error(400, 'Invalid League ID');
 	}
 
 	const golfers = await GolferTable.find().toArray();
 	const league = await League.findOne({ _id: new ObjectId(event.params.id) });
 	const myTeam = league?.teams?.find((team) => team.user_id === event.locals.user!!.id);
 	const auctionBoard = league?.draft_board;
+
+	if (!league) {
+		return error(404, 'League not found');
+	}
+
+	if (!myTeam) {
+		return error(403, 'You are not in this league');
+	}
 
 	golfers.sort((a, b) => {
 		if ((a?.owgr || 99999) > (b?.owgr || 99999)) {
@@ -122,11 +130,49 @@ export const actions: Actions = {
 		}
 	},
 	end_auction_round: async (event) => {
-		// put all winning bids on the respective teams
-		// remove all winning bids from the draft board
-		// set the current_bid to 0 for all golfers
-		// reset bids for each team
 		const leagueId = event.params.id;
-		return {};
+		const league = await League.findOne({ _id: new ObjectId(leagueId) });
+		if (!league) {
+			return fail(404, {
+				message: 'League not found',
+				league_error: true
+			});
+		}
+
+		const winningBids = league.draft_board?.filter((golfer) => golfer.winning_bid !== 0);
+
+		if (winningBids && winningBids.length > 0) {
+			for (const bid of winningBids) {
+				const team = league.teams?.find((team) => team.user_id === bid.winning_bidder_id);
+				if (team) {
+					team.golfers = team.golfers || [];
+					team.golfers.push(bid);
+				}
+			}
+
+			// Remove winning bids from the draft board
+			league.draft_board = league.draft_board?.filter((golfer) => !golfer.winning_bid);
+
+			// Reset current_bid and current_bidder_id for all golfers on the draft board
+			league.draft_board?.forEach((golfer) => {
+				golfer.current_bid = 0;
+				golfer.current_bidder_id = undefined;
+			});
+
+			// Reset bids for each team
+			league.teams?.forEach((team) => {
+				team.bids = [];
+			});
+
+			await League.updateOne(
+				{ _id: new ObjectId(leagueId) },
+				{
+					$set: {
+						draft_board: league.draft_board,
+						teams: league.teams
+					}
+				}
+			);
+		}
 	}
 };
