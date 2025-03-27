@@ -197,7 +197,7 @@
 						<tr>
 							<th>Golfer</th>
 							<th>World Golf Ranking</th>
-							<th>Current Highest Bid</th>
+							<th>Price</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -240,7 +240,7 @@
 					type="submit"
 					class="btn variant-ghost-success ml-16 pl-12 pr-12"
 					disabled={bidGolferIDs.length < 1 ||
-						remainingBudget <= 0 ||
+						remainingBudget < 6 - (myTeam.golfers?.length ?? 0) ||
 						bidGolferIDs.length + (myTeam.golfers?.length ?? 0) > 6}>Submit Bids</button
 				>
 			</div>
