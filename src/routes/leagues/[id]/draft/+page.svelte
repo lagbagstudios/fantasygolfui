@@ -111,13 +111,7 @@
 					) ?? 0);
 
 	$: leagueId = page.params.id;
-
-	$: autoRefresh = league?.draft_type === 'auction';
 </script>
-
-{#if autoRefresh}
-	<meta http-equiv="refresh" content="120" />
-{/if}
 
 <svelte:head>
 	<title>{league?.league_name || 'Unknown League'} - Draft</title>
