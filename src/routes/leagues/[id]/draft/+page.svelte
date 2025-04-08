@@ -134,6 +134,7 @@
 	{#if league?.draft_type === 'manual'}
 		<form
 			method="post"
+			action="?/submit"
 			use:enhance={({ formData }) => {
 				formData.append('golfers', JSON.stringify(selectedGolfers));
 				formData.append('draft_type', 'manual');

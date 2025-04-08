@@ -30,25 +30,37 @@ export const load: PageServerLoad = async (event) => {
 		return error(404, 'Draft board not found');
 	}
 
-	golfers.sort((a, b) => {
-		if ((a?.owgr || 99999) > (b?.owgr || 99999)) {
-			return 1;
-		} else if ((a?.owgr || 99999) < (b?.owgr || 99999)) {
-			return -1;
-		} else {
-			return 0;
-		}
-	});
+	if (league.draft_type === 'manual') {
+		golfers.sort((a, b) => {
+			if ((a?.price || 99999) < (b?.price || 99999)) {
+				return 1;
+			} else if ((a?.price || 99999) > (b?.price || 99999)) {
+				return -1;
+			} else {
+				return 0;
+			}
+		});
+	} else {
+		golfers.sort((a, b) => {
+			if ((a?.owgr || 99999) > (b?.owgr || 99999)) {
+				return 1;
+			} else if ((a?.owgr || 99999) < (b?.owgr || 99999)) {
+				return -1;
+			} else {
+				return 0;
+			}
+		});
 
-	auctionBoard?.sort((a, b) => {
-		if ((a?.owgr || 99999) > (b?.owgr || 99999)) {
-			return 1;
-		} else if ((a?.owgr || 99999) < (b?.owgr || 99999)) {
-			return -1;
-		} else {
-			return 0;
-		}
-	});
+		auctionBoard?.sort((a, b) => {
+			if ((a?.owgr || 99999) > (b?.owgr || 99999)) {
+				return 1;
+			} else if ((a?.owgr || 99999) < (b?.owgr || 99999)) {
+				return -1;
+			} else {
+				return 0;
+			}
+		});
+	}
 
 	return {
 		golfers: JSON.parse(JSON.stringify(golfers)),
