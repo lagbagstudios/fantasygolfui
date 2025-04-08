@@ -1,10 +1,11 @@
 <script lang="ts">
-	import type { ActionData } from './$types';
-	import { page } from '$app/stores';
+	import type { ActionData } from '../$types';
+	import { page } from '$app/state';
 	import { enhance } from '$app/forms';
 
 	export let form: ActionData;
-	let code = form?.code || $page.url.searchParams.get('code');
+	let code = form?.code || page.params.code || page.url.searchParams.get('code');
+	let password = page.url.searchParams.get('password') || '';
 </script>
 
 <svelte:head>
@@ -29,6 +30,7 @@
 					name="password"
 					placeholder="League Password"
 					class="py-3 px-4 block w-full text-sm disabled:pointer-events-none input"
+					bind:value={password}
 				/>
 				<button
 					type="submit"

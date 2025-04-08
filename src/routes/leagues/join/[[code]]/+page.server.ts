@@ -1,6 +1,6 @@
 import { League, getDefaultTeamName } from '$lib/server/league';
 import { redirect, type Actions, fail } from '@sveltejs/kit';
-import type { PageServerLoad } from './$types';
+import type { PageServerLoad } from '../$types';
 
 const joinLeague = async (joinCode: string, userId: string, givenName: string) => {
 	await League.updateOne(
