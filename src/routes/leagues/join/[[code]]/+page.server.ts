@@ -7,7 +7,7 @@ const joinLeague = async (joinCode: string, userId: string, givenName: string) =
 		{ join_code: joinCode },
 		{
 			$push: {
-				teams: { user_id: userId, team_name: getDefaultTeamName(givenName) }
+				teams: { user_id: userId, team_name: getDefaultTeamName(givenName), golfers: [] }
 			}
 		}
 	);
