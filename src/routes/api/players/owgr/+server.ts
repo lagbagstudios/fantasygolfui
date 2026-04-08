@@ -13,8 +13,7 @@ export async function POST(event) {
 	await data.forEach((golfer) => {
 		GolferTable.updateOne(
 			{
-				first_name: golfer.first_name,
-				last_name: golfer.last_name
+				slashgolf_id: golfer.slashgolf_id
 			},
 			{
 				$set: {
