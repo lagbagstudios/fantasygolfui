@@ -26,11 +26,11 @@
 	const draftEligible = data?.draftEligible;
 	let myTeamName: string | undefined = myTeam?.team_name;
 
-	const notifyDraftEnd = new Date() < new Date('2025-04-10');
+	const notifyDraftEnd = new Date() < new Date('2026-04-09');
 
 	if (notifyDraftEnd) {
 		const t: ToastSettings = {
-			message: 'Drafting and Editing your team closes on April 9th at 11:59pm!',
+			message: 'Drafting and Editing your team closes on April 8th at 11:59pm!',
 			background: 'variant-filled-warning',
 			timeout: 10000
 		};
