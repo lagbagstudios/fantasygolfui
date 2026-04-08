@@ -27,8 +27,8 @@ export async function POST(event) {
 			{ first_name: golfer.first_name, last_name: golfer.last_name },
 			{
 				$set: {
-					golfer_id: golfer.golfer_id,
-					slashgolf_id: golfer.slashgolf_id,
+					...(golfer.golfer_id != null && { golfer_id: golfer.golfer_id }),
+					...(golfer.slashgolf_id != null && { slashgolf_id: golfer.slashgolf_id }),
 					first_name: golfer.first_name,
 					last_name: golfer.last_name,
 					price: golfer.price,
