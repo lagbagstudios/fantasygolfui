@@ -10,7 +10,7 @@ const roundSum = (roundScores: [number]) => {
 export const updateGolferScores = async () => {
 	console.log('Updating golfer scores...');
 	const mastersResponse = await fetch(
-		'https://www.masters.com/en_US/scores/feeds/2025/scores.json'
+		'https://www.masters.com/en_US/scores/feeds/2026/scores.json'
 	);
 	const mastersLeaderboardData = await mastersResponse.json();
 	const golfers = mastersLeaderboardData.data?.player?.map((golfer: any) => {
@@ -45,21 +45,6 @@ export const updateGolferScores = async () => {
 			},
 			{
 				arrayFilters: [{ 'g.golfer_id': golfer.golfer_id }]
-			}
-		);
-
-		GolferTable.updateOne(
-			{
-				golfer_id: golfer.golfer_id
-			},
-			{
-				$set: {
-					r1_score: golfer.r1_score || 0,
-					r2_score: golfer.r2_score || 0,
-					r3_score: golfer.r3_score || 0,
-					r4_score: golfer.r4_score || 0,
-					score: golfer.score || 0
-				}
 			}
 		);
 	});
