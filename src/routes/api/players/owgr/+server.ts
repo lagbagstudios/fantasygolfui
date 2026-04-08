@@ -8,18 +8,17 @@ export async function POST(event) {
 		return new Response(null, { status: 401 });
 	}
 
-	const data: [OWGR] = await event.request.json();
+	const data: [Golfer] = await event.request.json();
 
 	await data.forEach((golfer) => {
-		const [first_name, last_name] = golfer.player_name.split(' ');
 		GolferTable.updateOne(
 			{
-				first_name: first_name,
-				last_name: last_name
+				first_name: golfer.first_name,
+				last_name: golfer.last_name
 			},
 			{
 				$set: {
-					owgr: golfer.position
+					owgr: golfer.owgr
 				}
 			},
 			{ upsert: false }
@@ -29,9 +28,4 @@ export async function POST(event) {
 	const golfers = await GolferTable.find().toArray();
 
 	return json(golfers);
-}
-
-interface OWGR {
-	position: number;
-	player_name: string;
 }
